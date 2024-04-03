@@ -2,6 +2,7 @@
 
 This is a AI helper to answer questions about linux shell usage for tmux user.
 
+![demo](https://github.com/singleye/tmux-ai-helper/blob/main/demo.gif)
 
 # Installation
 

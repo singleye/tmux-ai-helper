@@ -2,6 +2,7 @@
 
 This is a AI helper to answer questions about linux shell usage for tmux user.
 
+
 # Installation
 
 ## Install with TPM
@@ -30,16 +31,27 @@ run-shell ~/.tmux/plugins/tmux-ai-helper/ai_helper.tmux
 
 # Usage
 
+Before using this plugin, install [ollama](https://github.com/ollama/ollama) first. Then install the 'llama2:latest' model which is the default model of this plugin.
+
 Press `prefix + Q` to open a command prompt, input your question in the prompt, and then press enter to send the question to the AI server
 
 # Configuration
 
 ## Change the key binding
 
-You can change the key binding by adding the following line to your `ai-shell-helper.tmux`:
+You can change the key binding by changing the following line to your `ai-shell-helper.tmux`:
 
 ```
 tmux bind-key Q command-prompt "split-window 'exec $CURRENT_DIR/scripts/ai_helper.py $OLLAMA_SERVER $MODEL_NAME %%'"
+```
+
+## Change the ollama server and model
+
+You can change the ollama server URL and model name changing the following lines to your `ai-shell-helper.tmux`:
+
+```
+OLLAMA_SERVER="http://localhost:11434"
+MODEL_NAME="llama2:latest"
 ```
 
 # Known issue

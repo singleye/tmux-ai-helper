@@ -1,50 +1,56 @@
 #!/usr/bin/env python3
 
-#import requests
 import sys
 import os
 import json
 import urllib
 from urllib import request
-#import ollama
 
-ENV_VAR_MODEL_NAME = "OLLAMA_MODEL_NAME"
 DEFAULT_MODEL_NAME = "llama2:latest"
-OLLAMA_SERVER_URL = "http://localhost:11434/api/generate"
+DEFAULT_OLLAMA_SERVER = "http://localhost:11434"
 
-
-def get_ai_response(model_name, message):
+def get_ai_response(question, ollama_server, model_name):
     data = {
         "model": model_name,
-        "prompt": """Help me to generate a command line for linux shell to do the following: %s
-
-Output format: each line starts with '#'
-        """ % message,
+        "prompt": "Help me to generate the linux shell command line to do the following: %s" % question,
         "stream": False
     }
     headers = {
         "Content-Type": "application/json"
     }
-    req = request.Request(OLLAMA_SERVER_URL,
+    ollama_request_url = f"{ollama_server}/api/generate"
+    req = request.Request(ollama_request_url,
                           data=json.dumps(data).encode("utf-8"),
                           headers=headers)
     resp = request.urlopen(req)
-    response = json.loads(resp.read())['response']
-    lines = []
-    for line in response.split('\n'):
-        lines.append(' #> ' + line)
-    answer = '\n'.join(lines)
+    answer = json.loads(resp.read())['response']
+    #lines = []
+    #for line in response.split('\n'):
+    #    lines.append('' + line)
+    #answer = '\n'.join(lines)
     return answer
 
-def help_me(model_name):
-    #question = input("\nAI helper(%s) >" % model_name)
-    question = input(" #: ")
-    answer = get_ai_response(model_name, question)
+def wait_for_exit():
+    print('\nPress Q/q to exit!')
+    while sys.stdin.read().lower() != 'q':
+        continue
+
+def help_me(question, ollama_server=DEFAULT_OLLAMA_SERVER, model_name=DEFAULT_MODEL_NAME):
+    answer = get_ai_response(question, ollama_server, model_name)
     print(answer)
+    wait_for_exit()
 
 def main():
-    model_name = os.environ.get(ENV_VAR_MODEL_NAME, DEFAULT_MODEL_NAME)
-    help_me(model_name)
+    if len(sys.argv) < 4:
+        print("Usage: %s <ollama_url> <model_name> <question>" % sys.argv[0])
+        wait_for_exit()
+        sys.exit(1)
+    ollama_server_url = sys.argv[1]
+    model_name = sys.argv[2]
+    question = ' '.join(sys.argv[3:])
+    with open('/tmp/ai_helper.log', 'a') as f:
+        f.write(f"question: {question}\n")
+    help_me(question, ollama_server_url, model_name)
 
 if __name__ == "__main__":
     main()

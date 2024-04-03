@@ -1,56 +1,102 @@
 #!/usr/bin/env python3
 
+"""
+Ask the AI model to generate the command line interface for the given question.
+"""
+
 import sys
-import os
 import json
-import urllib
+import termios
+import tty
 from urllib import request
+
 
 DEFAULT_MODEL_NAME = "llama2:latest"
 DEFAULT_OLLAMA_SERVER = "http://localhost:11434"
 
-def get_ai_response(question, ollama_server, model_name):
+def query_ollama(question, ollama_server, model_name):
+    """Query the Ollama server to get the response for the given question.
+
+    Using streaming API to get the response in chunks.
+
+    Args:
+        question (str): The question to ask the AI model.
+        ollama_server (str): The Ollama server URL, e.g. http://localhost:11434.
+        model_name (str): The model name to use.
+    """
+
+    ollama_request_url = f"{ollama_server}/api/generate"
     data = {
         "model": model_name,
-        "prompt": "Help me to generate the linux shell command line to do the following: %s" % question,
-        "stream": False
+        "prompt": ("Help me to generate the command line interface "
+                   f" for linux shell to do the following: {question}"),
+        "stream": True
     }
     headers = {
         "Content-Type": "application/json"
     }
-    ollama_request_url = f"{ollama_server}/api/generate"
     req = request.Request(ollama_request_url,
                           data=json.dumps(data).encode("utf-8"),
                           headers=headers)
-    resp = request.urlopen(req)
-    answer = json.loads(resp.read())['response']
-    #lines = []
-    #for line in response.split('\n'):
-    #    lines.append('' + line)
-    #answer = '\n'.join(lines)
-    return answer
+    with request.urlopen(req) as resp:
+        for line in resp:
+            data = json.loads(line.decode('utf-8'))
+            if data['done']:
+                break
+            yield data['response']
 
-def wait_for_exit():
-    print('\nPress Q/q to exit!')
-    while sys.stdin.read().lower() != 'q':
-        continue
+def wait_for_exit(exit_value=0, prompt="\n\nPress Q/q to quit!", quit_key='q'):
+    """Wait for the user to press the quit key to exit the program.
 
-def help_me(question, ollama_server=DEFAULT_OLLAMA_SERVER, model_name=DEFAULT_MODEL_NAME):
-    answer = get_ai_response(question, ollama_server, model_name)
-    print(answer)
-    wait_for_exit()
+    Need to set the terminal to raw mode to read the key press.
+
+    Args:
+        exit_value (int): The exit value to use when exiting the program.
+        prompt (str): The prompt message to display.
+        quit_key (str): The key to press to exit the program.
+    """
+
+    print(prompt, end="")
+    fd = sys.stdin.fileno()
+    old_settings = termios.tcgetattr(fd)
+    try:
+        tty.setraw(fd)
+        while True:
+            read_char_count = 1
+            char = sys.stdin.read(read_char_count)
+            if char.lower() == quit_key.lower():
+                break
+    finally:
+        termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
+    sys.exit(exit_value)
+
+def ask_ai(question, ollama_server=DEFAULT_OLLAMA_SERVER, model_name=DEFAULT_MODEL_NAME):
+    """
+    Ask the AI model to generate the command line interface for the given question.
+
+    Args:
+        question (str): The question to ask the AI model.
+        ollama_server (str): The Ollama server URL.
+        model_name (str): The model name to use.
+    """
+    for answer in query_ollama(question, ollama_server, model_name):
+        print(answer, end='')
 
 def main():
+    """
+    Main function.
+    """
+
     if len(sys.argv) < 4:
-        print("Usage: %s <ollama_url> <model_name> <question>" % sys.argv[0])
-        wait_for_exit()
-        sys.exit(1)
+        print(f"Usage: {sys.argv[0]} <ollama_url> <model_name> <question>")
+        wait_for_exit(exit_value=1)
+
     ollama_server_url = sys.argv[1]
     model_name = sys.argv[2]
     question = ' '.join(sys.argv[3:])
-    with open('/tmp/ai_helper.log', 'a') as f:
-        f.write(f"question: {question}\n")
-    help_me(question, ollama_server_url, model_name)
+    ask_ai(question, ollama_server_url, model_name)
+    wait_for_exit(exit_value=0)
+
 
 if __name__ == "__main__":
     main()

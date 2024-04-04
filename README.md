@@ -40,7 +40,7 @@ Press `prefix + Q` to open a command prompt, input your question in the prompt, 
 
 ## Change the key binding
 
-You can change the key binding by changing the following line to your `ai-shell-helper.tmux`:
+You can change the key binding by changing the following line to your `ai_helper.tmux`:
 
 ```
 tmux bind-key Q command-prompt "split-window 'exec $CURRENT_DIR/scripts/ai_helper.py $OLLAMA_SERVER $MODEL_NAME %%'"
@@ -48,7 +48,7 @@ tmux bind-key Q command-prompt "split-window 'exec $CURRENT_DIR/scripts/ai_helpe
 
 ## Change the ollama server and model
 
-You can change the ollama server URL and model name changing the following lines to your `ai-shell-helper.tmux`:
+You can change the ollama server URL and model name changing the following lines to your `ai_helper.tmux`:
 
 ```
 OLLAMA_SERVER="http://localhost:11434"

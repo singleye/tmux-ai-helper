@@ -80,7 +80,7 @@ def ask_ai(question, ollama_server=DEFAULT_OLLAMA_SERVER, model_name=DEFAULT_MOD
         model_name (str): The model name to use.
     """
     for answer in query_ollama(question, ollama_server, model_name):
-        print(answer, end='')
+        print(answer, end='', flush=True)
 
 def main():
     """

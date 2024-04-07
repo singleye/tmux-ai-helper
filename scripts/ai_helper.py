@@ -28,8 +28,8 @@ def query_ollama(question, ollama_server, model_name):
     ollama_request_url = f"{ollama_server}/api/generate"
     data = {
         "model": model_name,
-        "prompt": ("Help me to generate the command line interface "
-                   f" for linux shell to do the following: {question}"),
+        "prompt": ("You are an expert programmer that writes simple, concise code and "
+                   f"explanations. Please give answer to following question: {question}"),
         "stream": True
     }
     headers = {
@@ -45,7 +45,7 @@ def query_ollama(question, ollama_server, model_name):
                 break
             yield data['response']
 
-def wait_for_exit(exit_value=0, prompt="\n\nPress Q/q to quit!", quit_key='q'):
+def wait_for_exit(exit_value=0, prompt="\n\nPress Q/q to quit! ", quit_key='q'):
     """Wait for the user to press the quit key to exit the program.
 
     Need to set the terminal to raw mode to read the key press.

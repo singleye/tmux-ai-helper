@@ -32,7 +32,7 @@ run-shell ~/.tmux/plugins/tmux-ai-helper/ai_helper.tmux
 
 # Usage
 
-Before using this plugin, install [ollama](https://github.com/ollama/ollama) first. Then install the 'llama2:latest' model which is the default model of this plugin.
+Before using this plugin, install [ollama](https://github.com/ollama/ollama) first. Then install the 'codellama:latest' model which is the default model of this plugin.
 
 Press `prefix + Q` to open a command prompt, input your question in the prompt, and then press enter to send the question to the AI server
 
@@ -52,7 +52,7 @@ You can change the ollama server URL and model name changing the following lines
 
 ```
 OLLAMA_SERVER="http://localhost:11434"
-MODEL_NAME="llama2:latest"
+MODEL_NAME="codellama:latest"
 ```
 
 # Known issue

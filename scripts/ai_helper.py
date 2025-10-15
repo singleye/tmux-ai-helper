@@ -53,18 +53,18 @@ def query_ollama(question, ollama_server, model_name):
                 break
             yield data['response']
 
-def query_lm_studio(question, lm_studio_server, model_name):
-    """Query the LM Studio server to get the response for the given question.
+def query_openai(question, openai_server, model_name):
+    """Query the server support openai format to get the response for the given question.
 
     Using streaming API to get the response in chunks.
 
     Args:
         question (str): The question to ask the AI model.
-        lm_studio_server (str): The LM Studio server URL, e.g. http://localhost:8080.
+        openai_server (str): The openai server URL, e.g. http://localhost:1234.
         model_name (str): The model name to use.
     """
 
-    lm_studio_request_url = f"{lm_studio_server}/v1/chat/completions"
+    openai_request_url = f"{openai_server}/v1/chat/completions"
     data = {
         "model": model_name,
         "messages": [
@@ -89,7 +89,7 @@ def query_lm_studio(question, lm_studio_server, model_name):
     headers = {
         "Content-Type": "application/json"
     }
-    req = request.Request(lm_studio_request_url,
+    req = request.Request(openai_request_url,
                           data=json.dumps(data).encode("utf-8"),
                           headers=headers)
     with request.urlopen(req) as resp:
@@ -149,8 +149,8 @@ def ask_ai(question, ai=DEFAULT_AI, llm_server=DEFAULT_OLLAMA_SERVER, model_name
     if ai == 'ollama':
         for answer in query_ollama(question, llm_server, model_name):
             print(answer, end='', flush=True)
-    elif ai == 'lmstudio':
-        for answer in query_lm_studio(question, llm_server, model_name):
+    elif ai == 'openai':
+        for answer in query_openai(question, llm_server, model_name):
             print(answer, end='', flush=True)
 
 def main():

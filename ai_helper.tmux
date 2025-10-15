@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-LLM="lmstudio"
+LLM="openai"
 LLM_SERVER="http://localhost:1234"
 MODEL_NAME="qwen3-coder-30b-a3b-instruct"
 

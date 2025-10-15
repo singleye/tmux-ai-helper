@@ -2,6 +2,11 @@
 
 This is a AI helper to answer questions about linux shell usage for tmux user.
 
+LLM support:
+
+* Ollama: supported
+* OpenAI: supported
+
 ![demo](https://github.com/singleye/tmux-ai-helper/blob/main/demo.gif)
 
 # Installation
@@ -51,8 +56,21 @@ tmux bind-key Q command-prompt "split-window 'exec $CURRENT_DIR/scripts/ai_helpe
 You can change the ollama server URL and model name changing the following lines to your `ai_helper.tmux`:
 
 ```
+LLM="ollama"
 OLLAMA_SERVER="http://localhost:11434"
 MODEL_NAME="codellama:latest"
+```
+
+## Change the openai server and model
+
+Any openai compatible server can be used, e.g. [lm studio]
+
+You can change the openai server URL and model name changing the following lines to your `ai_helper.tmux`:
+
+```
+LLM="openai"
+LLM_SERVER="http://localhost:1234"
+MODEL_NAME="qwen3-coder-30b-a3b-instruct"
 ```
 
 # Known issue
